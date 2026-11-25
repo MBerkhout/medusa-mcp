@@ -192,6 +192,23 @@ claude mcp add --transport http medusa https://mcp.example.com/mcp \
 | `POST /oauth/login` | consent form (rate limited: 10 attempts / 15 min / IP) |
 | `GET /healthz` | health check |
 
+## Self-hosting on Hosted Power (Vrije Academie)
+
+Fork-specific notes for `medusa-mcp.vrijeacademie.nl` (account `mcp`). Deployed from the pinned tag `va-1`; never track `main`.
+
+- **Layout:** app in `~/app`, env file `~/medusa-mcp.env` (0600), OAuth state and audit log in `~/data` (0700).
+- **Service:** `systemd --user` unit `medusa-mcp` (Linger is on, so it survives reboots).
+  - Status/restart: `systemctl --user status|restart medusa-mcp`
+  - Logs: `journalctl --user -u medusa-mcp -f`
+- **Proxy:** set the reverse proxy port of the vhost to `3010` in the Hosted Power panel (must match `PORT`). The managed nginx sets the forwarded headers, so `TRUST_PROXY=1`.
+- **Config:** `MEDUSA_BACKEND_URL=http://127.0.0.1:9000`, `MEDUSA_READ_ONLY=true`, `MEDUSA_RAW_API=false`, `ALLOWED_REDIRECT_HOSTS=claude.ai,claude.com`.
+- **Connect Claude:**
+  - Claude.ai / Desktop: Settings -> Connectors -> Add custom connector -> `https://medusa-mcp.vrijeacademie.nl/mcp`, then enter `OWNER_PASSWORD` on the consent page.
+  - Claude Code: `claude mcp add --transport http medusa https://medusa-mcp.vrijeacademie.nl/mcp --header "Authorization: Bearer <MCP_STATIC_TOKEN>"`.
+- **Update:** `cd ~/app && git fetch --tags && git checkout <tag> && npm ci && npm run build && npm prune --omit=dev && systemctl --user restart medusa-mcp`.
+- **Rotate secrets:** change `OWNER_PASSWORD` / `MCP_STATIC_TOKEN` in the env file, delete `~/data/oauth-state.json`, restart. To rotate the Medusa key, create a new secret key in Medusa Admin, replace `MEDUSA_API_KEY`, restart, then revoke the old key.
+- **Enable writes:** set `MEDUSA_READ_ONLY=false` (optionally limit with `MEDUSA_TOOLSETS`), restart. Writes are logged to `AUDIT_LOG`.
+
 ## Security model
 
 - The Medusa API key never leaves the server. Clients get their own short-lived tokens (1 h access, 30-day refresh with rotation).
