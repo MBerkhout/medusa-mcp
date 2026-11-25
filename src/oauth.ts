@@ -136,7 +136,7 @@ export class OwnerPasswordOAuthProvider implements OAuthServerProvider {
     const given = createHash("sha256").update(password.trim()).digest();
     if (!timingSafeEqual(given, this.passwordHash)) {
       console.error(
-        `[medusa-mcp] wrong owner password for client "${p.clientName ?? p.clientId}" (${password.trim().length} characters)`,
+        `[medusa-mcp] wrong owner password for client "${p.clientName ?? p.clientId}"`,
       );
       return { error: "Wrong password." };
     }

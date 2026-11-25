@@ -175,7 +175,7 @@ claude mcp add --transport http medusa https://mcp.example.com/mcp \
 | `PUBLIC_URL` | HTTP | | Public HTTPS origin of this server (without `/mcp`) |
 | `OWNER_PASSWORD` | HTTP | | Password required on the consent page |
 | `MCP_STATIC_TOKEN` | | | Optional static bearer token |
-| `ALLOWED_REDIRECT_HOSTS` | | `claude.ai,claude.com,chatgpt.com,localhost,127.0.0.1` | Hosts OAuth clients may use as redirect targets |
+| `ALLOWED_REDIRECT_HOSTS` | | `claude.ai,claude.com` | Hosts OAuth clients may use as redirect targets |
 | `TRUST_PROXY` | | `1` | Express `trust proxy` – number of proxies in front |
 | `PORT` / `HOST` | | `3000` / `0.0.0.0` | Listen address |
 | `DATA_DIR` | | `./data` | Where OAuth clients and token hashes are stored |
